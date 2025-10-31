@@ -17,6 +17,9 @@ const App: React.FC = () => {
   const [selectedLighting, setSelectedLighting] = useState<string>('');
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
+  const [selectedFraming, setSelectedFraming] = useState<string>(''); // New: Framing
+  const [selectedGender, setSelectedGender] = useState<string>(''); // New: Gender
+  const [selectedPropObject, setSelectedPropObject] = useState<string>(''); // New: Props/Objects
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -86,14 +89,26 @@ const App: React.FC = () => {
     let promptSegments: string[] = [];
 
     // 1. Core Identity & Quality Preservation (Always included)
+    // This is the absolute base instruction for the model.
     promptSegments.push(`Create a photorealistic portrait of the person in the uploaded image. Ensure the identity and facial features are preserved with absolute accuracy. Enhance the image quality significantly, remove all scratches, tears, and imperfections. Transform it into a high-quality, professional studio portrait with natural color correction.`);
 
-    // 2. Add selected preset if not "No preset"
+    // 2. Gender (if specified) - This should come early to set the context for the subject.
+    if (selectedGender) {
+      promptSegments.push(`A portrait of a ${selectedGender} individual.`);
+    }
+
+    // 3. Framing/Crop (if specified) - Defines how much of the subject is visible.
+    if (selectedFraming) {
+      promptSegments.push(`Framing: ${selectedFraming}.`);
+    }
+
+    // 4. Add selected preset if not "No preset"
+    // Presets provide a comprehensive style that other settings can build upon or override.
     if (selectedPreset) {
       promptSegments.push(selectedPreset);
     }
 
-    // 3. Add selected advanced settings if they are not their default (empty string)
+    // 5. Add selected advanced settings if they are not their default (empty string)
     // These act as specific overrides or additions to the base or preset prompt.
     if (selectedClothing) {
       promptSegments.push(`Clothing and accessories: ${selectedClothing}.`);
@@ -110,8 +125,13 @@ const App: React.FC = () => {
     if (selectedStyle) {
       promptSegments.push(`Style notes: ${selectedStyle}.`);
     }
+    
+    // 6. Add props/objects (if specified) - These add contextual elements around the subject.
+    if (selectedPropObject) {
+      promptSegments.push(`Include in the scene: ${selectedPropObject}.`);
+    }
 
-    // 4. Finally, add any custom prompt text
+    // 7. Finally, add any custom prompt text for granular details
     if (customPrompt.trim()) {
       promptSegments.push(`Additional specific details and modifications: "${customPrompt.trim()}".`);
     }
@@ -128,7 +148,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedImage, selectedPreset, selectedClothing, selectedBackground, selectedLighting, selectedCamera, selectedStyle, customPrompt]);
+  }, [selectedImage, selectedPreset, selectedClothing, selectedBackground, selectedLighting, selectedCamera, selectedStyle, selectedFraming, selectedGender, selectedPropObject, customPrompt]);
 
   const handleSaveImage = () => {
     if (enhancedImage) {
@@ -277,6 +297,48 @@ const App: React.FC = () => {
           {/* Advanced Prompt Settings */}
           <div className="bg-gray-800 p-4 rounded-lg shadow-inner">
             <h3 className="text-gray-300 text-lg font-bold mb-4" dir="rtl">تنظیمات پیشرفته پرامپت:</h3>
+
+            {/* Gender */}
+            <div className="mb-4">
+              <label htmlFor="gender" className="block text-gray-300 text-sm font-bold mb-2" dir="rtl">
+                {promptBuildingBlocks.gender.label}:
+              </label>
+              <select
+                id="gender"
+                value={selectedGender}
+                onChange={(e) => handleAdvancedSettingChange(setSelectedGender, e.target.value)}
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                dir="rtl"
+                aria-label="انتخاب جنسیت"
+              >
+                {promptBuildingBlocks.gender.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Framing & Crop */}
+            <div className="mb-4">
+              <label htmlFor="framing-crop" className="block text-gray-300 text-sm font-bold mb-2" dir="rtl">
+                {promptBuildingBlocks.framingCrop.label}:
+              </label>
+              <select
+                id="framing-crop"
+                value={selectedFraming}
+                onChange={(e) => handleAdvancedSettingChange(setSelectedFraming, e.target.value)}
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                dir="rtl"
+                aria-label="انتخاب کادربندی و برش"
+              >
+                {promptBuildingBlocks.framingCrop.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             
             {/* Clothing & Accessories */}
             <div className="mb-4">
@@ -287,7 +349,7 @@ const App: React.FC = () => {
                 id="clothing-accessories"
                 value={selectedClothing}
                 onChange={(e) => handleAdvancedSettingChange(setSelectedClothing, e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 dir="rtl"
                 aria-label="انتخاب لباس و لوازم جانبی"
               >
@@ -308,7 +370,7 @@ const App: React.FC = () => {
                 id="background-environment"
                 value={selectedBackground}
                 onChange={(e) => handleAdvancedSettingChange(setSelectedBackground, e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 dir="rtl"
                 aria-label="انتخاب پس‌زمینه و محیط"
               >
@@ -329,7 +391,7 @@ const App: React.FC = () => {
                 id="lighting-atmosphere"
                 value={selectedLighting}
                 onChange={(e) => handleAdvancedSettingChange(setSelectedLighting, e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 dir="rtl"
                 aria-label="انتخاب نورپردازی و اتمسفر"
               >
@@ -350,7 +412,7 @@ const App: React.FC = () => {
                 id="camera-settings"
                 value={selectedCamera}
                 onChange={(e) => handleAdvancedSettingChange(setSelectedCamera, e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 dir="rtl"
                 aria-label="انتخاب دوربین و تنظیمات"
               >
@@ -363,7 +425,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Style Notes */}
-            <div>
+            <div className="mb-4">
               <label htmlFor="style-notes" className="block text-gray-300 text-sm font-bold mb-2" dir="rtl">
                 {promptBuildingBlocks.styleNotes.label}:
               </label>
@@ -371,11 +433,32 @@ const App: React.FC = () => {
                 id="style-notes"
                 value={selectedStyle}
                 onChange={(e) => handleAdvancedSettingChange(setSelectedStyle, e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 dir="rtl"
                 aria-label="انتخاب نکات سبک و استایل"
               >
                 {promptBuildingBlocks.styleNotes.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Props / Objects */}
+            <div>
+              <label htmlFor="props-objects" className="block text-gray-300 text-sm font-bold mb-2" dir="rtl">
+                {promptBuildingBlocks.propsObjects.label}:
+              </label>
+              <select
+                id="props-objects"
+                value={selectedPropObject}
+                onChange={(e) => handleAdvancedSettingChange(setSelectedPropObject, e.target.value)}
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                dir="rtl"
+                aria-label="انتخاب اشیای همراه در صحنه"
+              >
+                {promptBuildingBlocks.propsObjects.options.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>

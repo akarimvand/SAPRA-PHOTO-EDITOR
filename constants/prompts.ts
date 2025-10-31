@@ -3,7 +3,8 @@
 /**
  * Defines a structure for preset prompts and prompt building blocks.
  * Each item has a `value` (English prompt for the AI) and a `label` (Persian display text for the UI).
- * All prompts are gender-neutral to allow the AI to interpret gender based on the input image.
+ * All prompts are gender-neutral to allow the AI to interpret gender based on the input image,
+ * unless explicitly overridden by the new gender selection option.
  */
 
 export const presetPrompts = [
@@ -28,9 +29,31 @@ export const presetPrompts = [
   { value: 'Portrait of an individual with dramatic shadows on their face, golden hour lighting, artistic photography, fine facial detail, cinematic tone, ultra-HD realism, expressive emotional vibe, moody portrait aesthetic.', label: 'پرتره سایه‌های دراماتیک از فردی (نور طلایی)'},
   { value: 'Stylish individual standing on a rooftop during sunset, glowing city background, cinematic lighting, confident pose, soft golden tones, professional DSLR quality, urban skyline aesthetic, modern vibe.', label: 'ادیت ساعت طلایی پشت بام از فردی (منظره شهر)'},
   { value: 'Studio portrait of an individual in black turtleneck, plain background, soft diffused lighting, clean contrast, detailed texture, DSLR focus, professional fashion editorial look, high-end minimal aesthetic in 4K quality.', label: 'شات فشن استودیویی مینیمال از فردی (یقه اسکی مشکی)'},
+  // New Iranian-themed presets
+  { value: 'Portrait of an individual in traditional Persian attire, intricate patterns, vibrant colors, set against a backdrop of ancient Persian architecture, soft, warm lighting, emphasizing cultural richness and historical elegance.', label: 'پرتره با لباس سنتی ایرانی در معماری کهن' },
+  { value: 'Modern Iranian portrait, showcasing an individual with contemporary fashion blended with subtle traditional elements, in an urban Tehran backdrop, dramatic evening lighting, conveying a sophisticated and artistic aesthetic.', label: 'پرتره مدرن ایرانی با استایل معاصر و نمادهای سنتی در تهران' },
+  { value: 'A thoughtful portrait of an individual in a traditional Iranian house, with intricate tilework and natural light filtering through stained-glass windows, creating a serene and culturally rich atmosphere.', label: 'پرتره متفکرانه در خانه سنتی ایرانی با نور رنگی' },
 ];
 
 export const promptBuildingBlocks = {
+  gender: {
+    label: 'جنسیت',
+    options: [
+      { value: '', label: 'پیش‌فرض (مدل جنسیت را تشخیص دهد)' },
+      { value: 'male', label: 'مرد' },
+      { value: 'female', label: 'زن' },
+    ],
+  },
+  framingCrop: {
+    label: 'کادربندی و برش',
+    options: [
+      { value: '', label: 'پیش‌فرض (مدل کادربندی را انتخاب کند)' },
+      { value: 'full body shot', label: 'تمام قد' },
+      { value: 'half body shot', label: 'نیم‌تنه' },
+      { value: 'face shot', label: 'چهره' },
+      { value: 'close-up face shot', label: 'چهره بسته (کلوزآپ)' },
+    ],
+  },
   clothingAccessories: {
     label: 'لباس و لوازم جانبی',
     options: [
@@ -62,6 +85,8 @@ export const promptBuildingBlocks = {
       { value: 'serene Japanese garden in autumn.', label: 'باغ آرام ژاپنی در پاییز'},
       { value: 'minimalist white studio.', label: 'استودیوی سفید مینیمالیستی'},
       { value: 'historic library with towering bookshelves.', label: 'کتابخانه تاریخی با قفسه‌های بلند'},
+      { value: 'an ancient Persian garden with intricate tilework and fountains.', label: 'یک باغ باستانی ایرانی با کاشی‌کاری‌های ظریف و فواره‌ها' },
+      { value: 'a bustling Iranian bazaar with colorful spices and traditional crafts.', label: 'یک بازار شلوغ ایرانی با ادویه‌های رنگارنگ و صنایع دستی سنتی' },
     ],
   },
   lightingAtmosphere: {
@@ -79,6 +104,7 @@ export const promptBuildingBlocks = {
       { value: 'soft, diffused window light.', label: 'نور نرم و پخش‌شده از پنجره'},
       { value: 'high-key, bright and airy.', label: 'نورپردازی روشن و با طراوت (های‌کی)'},
       { value: 'dusk blue hour glow.', label: 'درخشش آبی ساعت گرگ و میش'},
+      { value: 'Rembrandt lighting with a distinct triangle of light on the cheek, emphasizing depth and drama.', label: 'نورپردازی رامبراند (با مثلث نوری روی گونه)' }, // New Rembrandt lighting
     ],
   },
   cameraSettings: {
@@ -106,6 +132,18 @@ export const promptBuildingBlocks = {
       { value: 'vaporwave aesthetic, neon glow, retrofuturistic.', label: 'استایل ویپورویو، نور نئون، رتروفوتوریستیک'},
       { value: 'gritty, urban, street photography feel.', label: 'حس خشن، شهری، عکاسی خیابانی'},
       { value: 'ethereal, fantastical, dreamlike.', label: 'اثیری، فانتزی، شبیه رویا'},
+    ],
+  },
+  propsObjects: {
+    label: 'اشیای همراه در صحنه',
+    options: [
+      { value: '', label: 'پیش‌فرض (بدون شیء خاص)' },
+      { value: 'posed next to a vintage classic car.', label: 'کنار یک خودروی کلاسیک وینتیج' },
+      { value: 'standing beside an ancient Persian sculpture, rich in detail and history.', label: 'ایستاده کنار یک مجسمه باستانی ایرانی، غنی از جزئیات و تاریخ' },
+      { value: 'holding a traditional Persian instrument like a Setar or Tar.', label: 'در حال نگهداری یک ساز سنتی ایرانی مانند سه‌تار یا تار' },
+      { value: 'with a modern art sculpture in a gallery setting.', label: 'با یک مجسمه هنری مدرن در محیط گالری' },
+      { value: 'sitting on a plush velvet armchair.', label: 'نشسته روی یک مبل راحتی مخملی' },
+      { value: 'near a bookshelf filled with old, leather-bound books.', label: 'کنار قفسه کتابی پر از کتاب‌های قدیمی با جلد چرمی' },
     ],
   },
 };
