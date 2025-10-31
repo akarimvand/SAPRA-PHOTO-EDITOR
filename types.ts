@@ -3,6 +3,7 @@
 export interface PromptOption {
   value: string;
   label: string;
+  tags?: string[]; // Add optional tags for filtering
 }
 
 export interface ClothingOption extends PromptOption {
@@ -21,4 +22,8 @@ export interface PromptData {
   styles: PromptOption[];
   propsObjects: PromptOption[];
   photoSubject: PromptOption[]; // New field for single/group photo
+  hairStyles: PromptOption[]; // New field
+  makeup: PromptOption[]; // New field
+  accessories: PromptOption[]; // New field
+  facialExpressions: PromptOption[]; // New field
 }

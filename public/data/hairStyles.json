@@ -1,0 +1,23 @@
+
+[
+  { "value": "", "label": "پیش‌فرض (مدل موی موجود در تصویر)" },
+  { "value": "long flowing wavy hair.", "label": "موهای بلند مواج و روان" },
+  { "value": "short and sleek bob.", "label": "موهای کوتاه و شیک مدل باب" },
+  { "value": "braided updo with delicate adornments.", "label": "شینیون بافته شده با تزئینات ظریف" },
+  { "value": "messy bun with loose strands.", "label": "شینیون نامرتب با تارهای رها" },
+  { "value": "sharp, modern fade haircut.", "label": "مدل موی فید تیز و مدرن" },
+  { "value": "classic side-parted hairstyle.", "label": "مدل موی کلاسیک فرق از بغل" },
+  { "value": "textured quiff.", "label": "مدل موی کویف با بافت" },
+  { "value": "long, straight hair with bangs.", "label": "موهای بلند و صاف با چتری" },
+  { "value": "curly afro.", "label": "موهای مجعد آفرو" },
+  { "value": "slicked-back hairstyle.", "label": "مدل موی شانه شده به عقب" },
+  { "value": "elegant chignon.", "label": "شینیون ظریف و مجلسی" },
+  { "value": "ponytail with volume.", "label": "دم اسبی با حجم" },
+  { "value": "youthful pigtails.", "label": "مدل موی بچگانه خرگوشی" },
+  { "value": "boyish short haircut.", "label": "مدل موی کوتاه پسرانه" },
+  { "value": "pixie cut.", "label": "مدل موی پیکسی" },
+  { "value": "dreadlocks.", "label": "مدل موی دردلاک" },
+  { "value": "natural, untamed curls.", "label": "موهای فر طبیعی و رام نشده" },
+  { "value": "vintage finger waves.", "label": "موج‌های انگشتی وینتیج" },
+  { "value": "half-up, half-down style.", "label": "مدل موی نیمه باز، نیمه بسته" }
+]

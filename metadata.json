@@ -1,5 +1,8 @@
 {
   "name": "SAPRA PHOTO ENHANCER",
   "description": "SAPRA PHOTO ENHANCER: An AI-powered tool to restore and enhance photos into high-quality studio portraits with color correction, offering extensive customization options for framing, gender, age, clothing, lighting, and more. Developed by Amin Naseri Karimvand.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "clipboard-read",
+    "geolocation"
+  ]
 }

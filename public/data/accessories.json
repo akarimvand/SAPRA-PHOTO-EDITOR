@@ -1,0 +1,28 @@
+
+[
+  { "value": "", "label": "پیش‌فرض (اکسسوری موجود در تصویر)" },
+  { "value": "wearing delicate gold jewelry, including a necklace and earrings.", "label": "با جواهرات طلای ظریف، شامل گردنبند و گوشواره" },
+  { "value": "wearing statement silver earrings and a matching bracelet.", "label": "با گوشواره‌های نقره‌ای چشمگیر و دستبند ست" },
+  { "value": "a sophisticated watch on the wrist.", "label": "یک ساعت مچی پیچیده" },
+  { "value": "a stylish hat (e.g., fedora, beret, baseball cap).", "label": "یک کلاه شیک (مانند فدورا، بره، کلاه بیسبال)" },
+  { "value": "trendy sunglasses.", "label": "عینک آفتابی مد روز" },
+  { "value": "a silk scarf elegantly draped.", "label": "یک روسری ابریشمی که با ظرافت آویزان شده" },
+  { "value": "a designer handbag.", "label": "یک کیف دستی طراح" },
+  { "value": "a backpack for an adventurous look.", "label": "یک کوله پشتی برای ظاهری ماجراجویانه" },
+  { "value": "a pair of classic eyeglasses.", "label": "یک جفت عینک کلاسیک" },
+  { "value": "a tie or bow tie.", "label": "یک کراوات یا پاپیون" },
+  { "value": "pearl necklace and earrings.", "label": "گردنبند و گوشواره مروارید" },
+  { "value": "chunky knit scarf.", "label": "شال بافتنی ضخیم" },
+  { "value": "leather gloves.", "label": "دستکش چرمی" },
+  { "value": "a delicate floral headband.", "label": "یک تل سر گل‌دار ظریف (برای کودک)" },
+  { "value": "a playful crown.", "label": "تاج بازیگوش (برای کودک)" },
+  { "value": "a toy car or doll.", "label": "یک ماشین اسباب بازی یا عروسک (برای کودک)" },
+  { "value": "a traditional Persian turquoise necklace and earrings.", "label": "گردنبند و گوشواره فیروزه سنتی ایرانی" },
+  { "value": "a finely embroidered Persian shawl.", "label": "یک شال ایرانی با گلدوزی ظریف" },
+  { "value": "a string of prayer beads (Tasbih).", "label": "یک تسبیح (برای بزرگسال)" },
+  { "value": "a simple, elegant wedding veil.", "label": "یک تور عروس ساده و شیک" },
+  { "value": "a sparkling tiara.", "label": "تاج درخشان" },
+  { "value": "a boutonniere on a suit lapel.", "label": "گلسینه (بوتونیر) روی یقه کت" },
+  { "value": "a floral corsage.", "label": "یک مچ‌بند گل (کرساژ)" },
+  { "value": "a party hat and confetti.", "label": "یک کلاه جشن و کاغذ رنگی" }
+]
