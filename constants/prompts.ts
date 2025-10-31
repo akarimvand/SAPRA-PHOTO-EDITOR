@@ -7,7 +7,7 @@
  */
 
 export const presetPrompts = [
-  { value: '', label: 'بدون پرامپت آماده (فقط بهبود استودیویی استاندارد)' },
+  { value: '', label: 'بدون پرامپت آماده' }, // Simplified label, the core prompt describes standard enhancement
   { value: 'Classic studio portrait with soft lighting and neutral background, professional retouching, sharp focus, smooth skin, detailed textures, natural color correction, DSLR quality, timeless aesthetic.', label: 'پرتره استودیویی کلاسیک با نورپردازی نرم و پس‌زمینه خنثی' },
   { value: 'Outdoor portrait with natural light and shallow depth of field, vibrant colors, clear focus on subject, detailed environment blur, realistic skin tones, cinematic feel, professional outdoor photography.', label: 'پرتره در فضای باز با نور طبیعی و عمق میدان کم' },
   { value: 'Dramatic portrait with high contrast and deep shadows, intense mood, strong facial expressions, artistic lighting, detailed textures, powerful aesthetic, professional black and white conversion.', label: 'پرتره دراماتیک با کنتراست بالا و سایه‌های عمیق' },

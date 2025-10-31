@@ -18,18 +18,6 @@ const App: React.FC = () => {
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
 
-  // UI state for enabling/disabling elements
-  const isPresetActive = selectedPreset !== ''; // If any preset other than "No preset" is selected
-  const isCustomInputActive = !isPresetActive; // Custom prompt and advanced settings are active if no preset is chosen
-
-  const resetAdvancedSettings = useCallback(() => {
-    setSelectedClothing('');
-    setSelectedBackground('');
-    setSelectedLighting('');
-    setSelectedCamera('');
-    setSelectedStyle('');
-  }, []);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -48,28 +36,18 @@ const App: React.FC = () => {
   };
 
   const handlePresetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setSelectedPreset(value);
-    setCustomPrompt(value === '' ? '' : presetPrompts.find(p => p.value === value)?.value || ''); // Set custom prompt only if it's a real preset
-    
-    // Always reset advanced settings when a preset is chosen or cleared
-    resetAdvancedSettings();
+    setSelectedPreset(event.target.value);
+    // Presets no longer disable other inputs or reset them.
   };
 
   const handleCustomPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCustomPrompt(e.target.value);
-    // If user starts typing in custom prompt, clear preset selection
-    if (e.target.value.trim() !== '' && isPresetActive) {
-      setSelectedPreset('');
-    }
+    // Custom prompt input no longer clears preset selection.
   };
 
   const handleAdvancedSettingChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
     setter(value);
-    // If user selects an advanced option, clear preset selection
-    if (value !== '' && isPresetActive) {
-      setSelectedPreset('');
-    }
+    // Advanced setting selection no longer clears preset selection.
   };
 
   const handleRefinePrompt = useCallback(async () => {
@@ -84,7 +62,9 @@ const App: React.FC = () => {
     try {
       const refined = await refineUserPrompt(customPrompt);
       setCustomPrompt(refined); // Update custom prompt with the refined version
+      // Set a success message for a short period
       setError("پرامپت با موفقیت بهبود یافت.");
+      setTimeout(() => setError(null), 3000); // Clear after 3 seconds
     } catch (err: any) {
       console.error("خطا در بهبود پرامپت:", err);
       setError(`خطا در بهبود پرامپت: ${err.message || 'خطای ناشناخته'}`);
@@ -105,24 +85,35 @@ const App: React.FC = () => {
 
     let promptSegments: string[] = [];
 
-    // 1. Core Identity & Quality Preservation (Minimal)
-    promptSegments.push(`Create a photorealistic portrait of the person in the uploaded image. Ensure the identity and facial features are preserved with absolute accuracy. Enhance the image quality significantly, remove all scratches, tears, and imperfections. Transform it into a high-quality, professional studio portrait.`);
+    // 1. Core Identity & Quality Preservation (Always included)
+    promptSegments.push(`Create a photorealistic portrait of the person in the uploaded image. Ensure the identity and facial features are preserved with absolute accuracy. Enhance the image quality significantly, remove all scratches, tears, and imperfections. Transform it into a high-quality, professional studio portrait with natural color correction.`);
 
-    if (isPresetActive) {
-      // If a preset is selected, use its full value as the primary modifier
+    // 2. Add selected preset if not "No preset"
+    if (selectedPreset) {
       promptSegments.push(selectedPreset);
-    } else {
-      // Otherwise, build from advanced settings and custom prompt
-      // Ensure defaults are always used if no specific option is chosen
-      promptSegments.push(`Clothing and accessories: ${selectedClothing || 'Retain existing clothing and accessories, applying natural color correction.'}`);
-      promptSegments.push(`Background and environment: ${selectedBackground || 'clean, neutral, professional studio setting.'}`);
-      promptSegments.push(`Lighting and atmosphere: ${selectedLighting || 'soft, uniform, studio-quality.'}`);
-      promptSegments.push(`Camera and settings: ${selectedCamera || 'DSLR quality, professional photography.'}`);
-      promptSegments.push(`Style notes: ${selectedStyle || 'lively, realistic, modern color photo, cinematic, dreamy, and ultra-realistic, 4K.'}`);
+    }
 
-      if (customPrompt.trim()) {
-        promptSegments.push(`Additional specific details and modifications: "${customPrompt.trim()}".`);
-      }
+    // 3. Add selected advanced settings if they are not their default (empty string)
+    // These act as specific overrides or additions to the base or preset prompt.
+    if (selectedClothing) {
+      promptSegments.push(`Clothing and accessories: ${selectedClothing}.`);
+    }
+    if (selectedBackground) {
+      promptSegments.push(`Background and environment: ${selectedBackground}.`);
+    }
+    if (selectedLighting) {
+      promptSegments.push(`Lighting and atmosphere: ${selectedLighting}.`);
+    }
+    if (selectedCamera) {
+      promptSegments.push(`Camera and settings: ${selectedCamera}.`);
+    }
+    if (selectedStyle) {
+      promptSegments.push(`Style notes: ${selectedStyle}.`);
+    }
+
+    // 4. Finally, add any custom prompt text
+    if (customPrompt.trim()) {
+      promptSegments.push(`Additional specific details and modifications: "${customPrompt.trim()}".`);
     }
 
     const finalPrompt = promptSegments.join(' ');
@@ -137,7 +128,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedImage, isPresetActive, selectedPreset, selectedClothing, selectedBackground, selectedLighting, selectedCamera, selectedStyle, customPrompt]);
+  }, [selectedImage, selectedPreset, selectedClothing, selectedBackground, selectedLighting, selectedCamera, selectedStyle, customPrompt]);
 
   const handleSaveImage = () => {
     if (enhancedImage) {
@@ -226,7 +217,7 @@ const App: React.FC = () => {
           </div>
 
           {error && (
-            <div className="bg-red-600 bg-opacity-80 p-4 rounded-lg text-center shadow-lg" role="alert" dir="rtl">
+            <div className={`bg-${error.includes('با موفقیت') ? 'green' : 'red'}-600 bg-opacity-80 p-4 rounded-lg text-center shadow-lg`} role="alert" dir="rtl">
               <p className="font-semibold">{error}</p>
             </div>
           )}
@@ -261,14 +252,13 @@ const App: React.FC = () => {
               onChange={handleCustomPromptChange}
               rows={4}
               className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="تغییرات سفارشی خود را اینجا بنویسید (مثلاً: 'یک فیلتر قدیمی اضافه کن', 'پس‌زمینه را به یک جنگل تغییر بده'). هویت چهره همیشه حفظ خواهد شد."
+              placeholder="تغییرات سفارشی خود را اینجا بنویسید (مثلاً: 'یک فیلتر قدیمی اضافه کن', 'پس‌زمینه را به یک جنگل تغییر بده')."
               dir="rtl"
               aria-label="فیلد ورودی پرامپت سفارشی"
-              disabled={isPresetActive} // Disable if a preset is active
             ></textarea>
             <button
               onClick={handleRefinePrompt}
-              disabled={!customPrompt.trim() || isRefiningPrompt || isPresetActive} // Disable if preset is active
+              disabled={!customPrompt.trim() || isRefiningPrompt}
               className="mt-4 w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               dir="rtl"
               aria-label="بهبود پرامپت"
@@ -300,7 +290,6 @@ const App: React.FC = () => {
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 dir="rtl"
                 aria-label="انتخاب لباس و لوازم جانبی"
-                disabled={isPresetActive} // Disable if a preset is active
               >
                 {promptBuildingBlocks.clothingAccessories.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -322,7 +311,6 @@ const App: React.FC = () => {
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 dir="rtl"
                 aria-label="انتخاب پس‌زمینه و محیط"
-                disabled={isPresetActive} // Disable if a preset is active
               >
                 {promptBuildingBlocks.backgroundEnvironment.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -344,7 +332,6 @@ const App: React.FC = () => {
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 dir="rtl"
                 aria-label="انتخاب نورپردازی و اتمسفر"
-                disabled={isPresetActive} // Disable if a preset is active
               >
                 {promptBuildingBlocks.lightingAtmosphere.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -366,7 +353,6 @@ const App: React.FC = () => {
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 dir="rtl"
                 aria-label="انتخاب دوربین و تنظیمات"
-                disabled={isPresetActive} // Disable if a preset is active
               >
                 {promptBuildingBlocks.cameraSettings.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -388,7 +374,6 @@ const App: React.FC = () => {
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 dir="rtl"
                 aria-label="انتخاب نکات سبک و استایل"
-                disabled={isPresetActive} // Disable if a preset is active
               >
                 {promptBuildingBlocks.styleNotes.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -424,7 +409,7 @@ const App: React.FC = () => {
       </div>
 
       <footer className="text-center text-gray-400 mt-auto p-4" dir="rtl">
-        قدرت گرفته از Gemini API | توسعه داده شده توسط امین نصیری کریم‌وند akarimvand@gmail.com +۹۸۹۳۶۶۳۰۲۸۰۰
+        قدرت گرفته از Gemini API | توسعه داده شده توسط Amin Naseri Karimvand akarimvand@gmail.com +۹۸۹۳۶۶۳۰۲۸۰۰
       </footer>
     </div>
   );

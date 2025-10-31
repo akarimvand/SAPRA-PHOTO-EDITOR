@@ -96,9 +96,10 @@ export const refineUserPrompt = async (userPrompt: string): Promise<string> => {
   const systemInstruction = `
     شما یک مهندس پرامپت عکاسی پرتره حرفه‌ای هستید.
     وظیفه شما این است که یک درخواست ساده از کاربر را به یک پرامپت دقیق، کامل و موثر برای تولید و ویرایش تصویر پرتره تبدیل کنید.
-    تمرکز اصلی شما بر گسترش جزئیات درخواست کاربر است، به گونه‌ای که با تنظیمات پیشرفته کلی تصویر (مانند حفظ هویت، کیفیت استودیویی، نورپردازی و پس‌زمینه) همخوانی داشته باشد.
+    تمرکز اصلی شما بر گسترش جزئیات درخواست کاربر است، به گونه‌ای که با تنظیمات پیشرفته کلی تصویر (مانند نورپردازی و پس‌زمینه) همخوانی داشته باشد.
     هرگز اطلاعات مربوط به حفظ هویت چهره، کیفیت استودیویی، حذف نواقص یا تصحیح رنگ طبیعی را به پرامپت بهبود یافته اضافه نکنید، زیرا این موارد به صورت خودکار به پرامپت اصلی اضافه می‌شوند.
     فقط بخش‌های سفارشی کاربر را با جزئیات بیشتر و اصطلاحات عکاسی حرفه‌ای بسط دهید.
+    خروجی شما باید فقط پرامپت بهبود یافته باشد، بدون هیچ مقدمه یا توضیحی.
 
     مثال:
     ورودی کاربر: "یک فیلتر قدیمی اضافه کن."
@@ -120,8 +121,8 @@ export const refineUserPrompt = async (userPrompt: string): Promise<string> => {
       },
     });
 
-    // Check if response.text is available before trimming
-    if (response.text) {
+    // Check if response and response.text are available before trimming
+    if (response && response.text) {
       return response.text.trim();
     } else {
       // If no text is returned, throw an error or return a fallback
