@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Modality, GenerateContentResponse } from "@google/genai";
 
 /**
@@ -74,6 +73,62 @@ export const enhanceImage = async (base64ImageData: string, prompt: string): Pro
     }
   } catch (error) {
     console.error("Error enhancing image:", error);
+    throw error;
+  }
+};
+
+/**
+ * Refines a user-provided prompt using the Gemini API.
+ * @param userPrompt The initial prompt provided by the user.
+ * @returns A Promise that resolves with the refined prompt string.
+ */
+export const refineUserPrompt = async (userPrompt: string): Promise<string> => {
+  if (!process.env.API_KEY) {
+    throw new Error("API_KEY is not defined. Please ensure it's set in your environment variables.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  // The system instruction defines the model's persona and general rules.
+  // It specifically instructs the model to *only* refine the user's custom input,
+  // without adding the core enhancement details (identity, quality, etc.)
+  // as these are added separately in the App.tsx logic.
+  const systemInstruction = `
+    شما یک مهندس پرامپت عکاسی پرتره حرفه‌ای هستید.
+    وظیفه شما این است که یک درخواست ساده از کاربر را به یک پرامپت دقیق، کامل و موثر برای تولید و ویرایش تصویر پرتره تبدیل کنید.
+    تمرکز اصلی شما بر گسترش جزئیات درخواست کاربر است، به گونه‌ای که با تنظیمات پیشرفته کلی تصویر (مانند حفظ هویت، کیفیت استودیویی، نورپردازی و پس‌زمینه) همخوانی داشته باشد.
+    هرگز اطلاعات مربوط به حفظ هویت چهره، کیفیت استودیویی، حذف نواقص یا تصحیح رنگ طبیعی را به پرامپت بهبود یافته اضافه نکنید، زیرا این موارد به صورت خودکار به پرامپت اصلی اضافه می‌شوند.
+    فقط بخش‌های سفارشی کاربر را با جزئیات بیشتر و اصطلاحات عکاسی حرفه‌ای بسط دهید.
+
+    مثال:
+    ورودی کاربر: "یک فیلتر قدیمی اضافه کن."
+    خروجی بهبود یافته: "اضافه کردن فیلتر قدیمی با بافت دانه فیلم، رنگ‌های محو شده و حس نوستالژیک دهه ۶۰ میلادی."
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash', // Model for text generation
+      contents: {
+        parts: [{ text: `کاربر می‌خواهد این پرامپت را بهبود دهید: "${userPrompt}"` }], // User prompt sent here
+      },
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.7, // Adjust for creativity vs. directness
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 500, // Ensure enough tokens for a detailed prompt
+      },
+    });
+
+    // Check if response.text is available before trimming
+    if (response.text) {
+      return response.text.trim();
+    } else {
+      // If no text is returned, throw an error or return a fallback
+      throw new Error("مدل نتوانست پرامپت را بهبود بخشد. پاسخ متنی خالی بود.");
+    }
+  } catch (error) {
+    console.error("Error refining prompt:", error);
     throw error;
   }
 };
